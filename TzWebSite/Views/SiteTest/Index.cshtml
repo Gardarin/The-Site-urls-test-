@@ -1,0 +1,90 @@
+﻿@model TzWebSite.Models.WorkModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css">
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+</head>
+<body>
+    <h2>
+        <div class="text-warning">
+            @Html.RouteLink("Create a new test site", new
+            {
+                controller = "SiteTest",
+                action = "Create",
+                page = 1
+            })
+        </div>
+    </h2>
+
+    <div>
+        <table class="table table-striped table-hover " >
+
+            <tr class="success">
+                <td>
+                    Test Name
+                </td>
+                <td>
+                    Url
+                </td>
+                <td>
+                    Result
+                </td>
+                <td>
+                    Diagram
+                </td>
+            </tr>
+
+            @foreach (var i in Model.GetTests())
+            {
+                <tr>
+                    <td>
+                        @i.Name
+                    </td>
+                    <td>
+                        @i.Path
+                    </td>
+                    
+                    @if (i.TestResults != null)
+                    {
+                        int count=0;
+                        <td>
+                        @foreach (var a in i.TestResults.OrderByDescending(x =>Convert.ToInt32(x.Time)))
+                        {
+                            count++;
+
+                            <p> @(count-1) <a href=@a.Url>@a.Url></a></p>
+                            <a class="warning">@a.Time</a> <a>ms</a>
+
+                            if (count == 11)
+                            {
+                                break;
+                            }
+                        }
+                        @if (i.TestResults.Count < 10)
+                        {
+                            for (int j = i.TestResults.Count; j < 11; ++j)
+                            {
+                                <p>@j<a>_</a></p>
+                                <a class="warning">_</a><a>ms</a>
+                            }
+                        }
+                        </td>
+                        <td>
+                            <img src="@String.Format("data:image/bmp;base64,{0}", Convert.ToBase64String(Model.GetGraphic(i.Name,i.Path)))" />;
+                        </td>
+                    }
+                    
+                </tr>
+            }
+        </table>
+    </div>
+</body>
+</html>
