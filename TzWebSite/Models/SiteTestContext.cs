@@ -6,7 +6,7 @@ using System.Data.Entity.ModelConfiguration.Conventions;
 
 namespace TzWebSite.Models
 {
-    public class SiteTestContext:DbContext
+    public class SiteTestsContext:DbContext
     {
         public DbSet<SiteTest> SiteTests { get; set; }
         public DbSet<TestResult> TimeResult { get; set; }

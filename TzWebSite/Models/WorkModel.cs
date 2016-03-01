@@ -13,12 +13,12 @@ namespace TzWebSite.Models
     public class WorkModel
     {
         public List<SiteTest> _tests;
-        public SiteTestContext _siteContext;
+        public SiteTestsContext _siteContext;
 
         public WorkModel()
         {
             _tests = new List<SiteTest>();
-            _siteContext = new SiteTestContext();
+            _siteContext = new SiteTestsContext();
         }
 
         public void CreateSiteTest(string name, string path)
