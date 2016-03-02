@@ -13,12 +13,10 @@ namespace TzWebSite.Models
     public class WorkModel
     {
         public List<SiteTest> _tests;
-        public SiteTestsContext _siteContext;
 
         public WorkModel()
         {
             _tests = new List<SiteTest>();
-            _siteContext = new SiteTestsContext();
         }
 
         public void CreateSiteTest(string name, string path)
@@ -28,34 +26,51 @@ namespace TzWebSite.Models
             siteTest.Path = path;
             siteTest.TestResults = new List<TestResult>();
 
-            _siteContext.SiteTests.Add(siteTest);
-            _siteContext.SaveChanges();
+            using (var context = new SiteTestsContext())
+            {
+                context.SiteTests.Add(siteTest);
+                context.SaveChanges();
+            }
         }
 
         public void AddTestResult(string name, string path, List<TestResult> results)
         {
-            _siteContext.SiteTests.First(s => s.Name == name && s.Path == path).TestResults = results;
-            _siteContext.SaveChanges();
+            using (var context = new SiteTestsContext())
+            {
+                context.SiteTests.First(s => s.Name == name && s.Path == path).TestResults = results;
+                context.SaveChanges();
+            }
         }
 
         public void DelSiteTest(string name, string path)
         {
-            _siteContext.SiteTests.Remove(_siteContext.SiteTests.First(s => s.Name == name && s.Path == path));
-            _siteContext.SaveChanges();
+            using (var context = new SiteTestsContext())
+            {
+                context.SiteTests.Remove(context.SiteTests.First(s => s.Name == name && s.Path == path));
+                context.SaveChanges();
+            }
         }
 
         public List<SiteTest> GetTests()
         {
-            return _siteContext.SiteTests.Include("TestResults").OrderBy(x => x.Name).ToList();
+            using(var context = new SiteTestsContext())
+            {
+                _tests = context.SiteTests.Include("TestResults").OrderBy(x => x.Name).ToList();
+            }
+            return _tests;
         }
 
         //creating diagram
         public byte[] GetGraphic(string name, string path)
         {
-            SiteTest siteTest = _siteContext.SiteTests.Include("TestResults").First(x => x.Name == name && x.Path == path);
+            SiteTest siteTest;
+            using (var context = new SiteTestsContext())
+            {
+                siteTest = context.SiteTests.Include("TestResults").First(x => x.Name == name && x.Path == path);
 
-            var tests = _siteContext.SiteTests.Include("TestResults").OrderBy(x => x.Name).ToList();
+                _tests = context.SiteTests.Include("TestResults").OrderBy(x => x.Name).ToList();
 
+            }
             PictureBox picture=new PictureBox();
             Bitmap bitmap = new Bitmap(10*15, 200);
             picture.Image = bitmap;
